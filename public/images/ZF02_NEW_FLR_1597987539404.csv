@@ -1,0 +1,11 @@
+Serial No.|Document Date|Document Type|Company Code|Posting Date|Currency|Reference|Header Text|Posting Key|Account No.|Special GL indicator|Transaction Type|Amount|Tax Code|Business Place|Section Code|Payment Term|Baseline Date|Payment Reference|||Assignment|Cost Center|Profit Center||internal order no.|Text
+1|20.08.2020|SA|OCL|21.08.2020|INR|IATA Sales Recon Aug 20|IATA Sales Recon IATA|50|13025043|||95386.8|v0|1000|1000|0001|||||IATA Sales Recon Aug 20|||||IATA Sales Recon 20Aug20
+1||||||||21|305856|||95386.8|v0|1000|1000|0001|||||IATA Sales Recon Aug 20|||||IATA Sales Recon 20Aug20
+4|20.08.2020|SA|OCL|21.08.2020|INR|Go Air Sales Recon Aug 20|Go Air Sales Recon GO AIRLINES (INDIA) LIMITED|50|13025043|||64050|v0|1000|1000|0001|||||Go Air Sales Recon Aug 20|||||Go Air Sales Recon 20Aug20
+4||||||||21|301650|||64050|v0|1000|1000|0001|||||Go Air Sales Recon Aug 20|||||Go Air Sales Recon 20Aug20
+5|20.08.2020|SA|OCL|21.08.2020|INR|Air Asia Sales Recon Aug 20|Air Asia Sales Recon Air Asia|50|13025043|||62281.02|v0|1000|1000|0001|||||Air Asia Sales Recon Aug 20|||||Air Asia Sales Recon 20Aug20
+5||||||||21|307928|||62281.02|v0|1000|1000|0001|||||Air Asia Sales Recon Aug 20|||||Air Asia Sales Recon 20Aug20
+3|20.08.2020|SA|OCL|21.08.2020|INR|Spicejet Sales Recon Aug 20|Spicejet Sales Recon SpiceJet Limited|50|13025043|||676967.22|v0|1000|1000|0001|||||Spicejet Sales Recon Aug 20|||||Spicejet Sales Recon 20Aug20
+3||||||||21|500083|||676967.22|v0|1000|1000|0001|||||Spicejet Sales Recon Aug 20|||||Spicejet Sales Recon 20Aug20
+2|20.08.2020|SA|OCL|21.08.2020|INR|Indigo Sales Recon Aug 20|Indigo Sales Recon Indigo Direct|50|13025043|||4125339.03|v0|1000|1000|0001|||||Indigo Sales Recon Aug 20|||||Indigo Sales Recon 20Aug20
+2||||||||21|307530|||4125339.03|v0|1000|1000|0001|||||Indigo Sales Recon Aug 20|||||Indigo Sales Recon 20Aug20
