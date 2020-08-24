@@ -74,6 +74,16 @@
             <img src="/images/loading.gif" id="loader_offline" style="display: none"><img>
             <div id="message_offline" style="margin-top: 10px;"></div>
             <hr/>
+            <input type="submit" id="ip_submit" value="TRIGGER IP STATUS">
+            <img src="/images/loading.gif" id="loader_ip" style="display: none"><img>
+            <div id="message_ip" style="margin-top: 10px;"></div>
+            <hr/>
+            <input type="text" name="id_remove_options" placeholder="Enter poll ID for which you want to remove options">
+            <input type="text" name="remove_options" placeholder="Enter options which you want to remove">
+            <input type="submit" id="submit_remove_options" value="REMOVE">
+            <img src="/images/loading.gif" id="loader_remove_options" style="display: none"><img>
+            <div id="message_remove_options" style="margin-top: 10px;"></div>
+            <hr/>
             <%-html%>
         </div>
 
@@ -131,6 +141,34 @@
                 $('input[name=id_offline]').val('')
                 $('#message_offline').show();
                 $('#loader_offline').hide();
+            });
+        });
+        $("#submit_remove_options").click(function (event) {
+            var formData = {
+                'secret_key' : $('input[name=secretkey]').val(),
+                'poll_id' : $('input[name=id_remove_options]').val(),
+                'optionsToRemove' : $('input[name=remove_options]').val()
+            }
+            $('#message_remove_options').hide();
+            $('#loader_remove_options').show();
+            $.post("/removeoptions", formData,  function(data) {
+                $('#message_remove_options').text(data.message || '');
+                //$('input[name=id_remove_options]').val();
+                $('input[name=optionsToRemove]').val('');
+                $('#message_remove_options').show();
+                $('#loader_remove_options').hide();
+            });
+        });
+        $("#ip_submit").click(function (event) {
+            var formData = {
+                'secret_key' : $('input[name=secretkey]').val()
+            }
+            $('#message_ip').hide();
+            $('#loader_ip').show();
+            $.post("/changeipstatus", formData,  function(data) {
+                $('#message_ip').text(data.message || '');
+                $('#message_ip').show();
+                $('#loader_ip').hide();
             });
         });
         $().UItoTop({ easingType: 'easeOutQuart' });

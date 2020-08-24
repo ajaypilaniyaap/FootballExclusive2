@@ -26,7 +26,8 @@ var constants = {
     ITEMS_PER_PAGE : {
         POLLS : 10
     },
-    HASH : 'ap'
+    HASH : 'apsdsdefxdvdffxsdd',
+    SMMRY_API_KEY : '8DFB9082C1'
 };
 
 constants.HTML_DATA ={

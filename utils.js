@@ -20,10 +20,7 @@ var utils = {
         return JSON.stringify(json, null, "  ");
     },
     saveIP : function (req, res, next) {
-        req.ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            (req.connection.socket ? req.connection.socket.remoteAddress : null);
+        req.user_ip = req.headers['x-real-ip'];
         return next();
     },
     calculateBarChartData : function (req, res, next) {

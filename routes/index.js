@@ -93,20 +93,39 @@ router.get('/downloaddata', function(req, res){
   res.download(file);
 });
 
-router.get('/whitelistip', utils.saveIP, function(req, res){
-  pollTools.whiteListIPs[req.ip] = true;
+router.post('/changeipstatus', utils.authorize, utils.saveIP, function(req, res) {
+  pollTools.whiteListIPs[req.user_ip] = !(pollTools.whiteListIPs && pollTools.whiteListIPs[req.user_ip]);
   return res.json({
-    "message" : 'IP '+req.ip+' whitelisted'
+    "message" : 'IP '+req.user_ip+' status changed.'
   });
 });
 
+router.get('/getip', utils.saveIP, function(req, res) {
+  let finalJson = {
+    'x-forwared-for' : req.headers['x-forwarded-for'],
+    'remoteAddress' : req.connection.remoteAddress,
+    'x-real-ip' : req.headers['x-real-ip'],
+    'ip' : req.ip,
+    'user_ip' : req.user_ip,
+    'headers' : req.headers
+  }
+  return res.json(finalJson);
+});
+
 router.get('/dbinit', function (req, res, next) {
-  if (req.query.hash == constants.HASH) {
-    lowDBTools.db.defaults({ polls: [], subscribers : [], jobs:[], contact_requests : [] })
+  if (req.query.hash == constants.HASH && req.query.toput) {
+    let toPut = {};
+    toPut[req.query.toput] = [];
+    lowDBTools.db.defaults(toPut)
         .write();
     return res.send('Done');
   }
   return res.send('Invalid HASH');
 })
+
+router.post('/removeoptions', utils.authorize, pollTools.getPollDataById, pollTools.removeOptions, function (req, res, next) {
+  _.assign(req.responseJson, req.data);
+  return res.send(req.responseJson);
+});
 
 module.exports = router;

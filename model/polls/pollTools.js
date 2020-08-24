@@ -17,7 +17,7 @@ var pollTools = {
     saveAnswerToPollMap : function (req, res, next) {
         let poll_id = req.poll_id;
         let answer = req.body.answer;
-        let ip = req.ip;
+        let ip = req.user_ip;
 
         if (ip) {
             util.log("Ip :: ",ip);
@@ -459,6 +459,35 @@ var pollTools = {
                 return next();
             }
             req.responseJson.message = 'New options have been added to the poll successfully. Once admin approves them they will appear here.';
+            req.responseJson.success = true;
+            return next();
+        });
+    },
+    removeOptions : function (req, res, next) {
+        let optionsToRemove = req.body.optionsToRemove || '';
+        let poll_id = req.poll_id || req.body.poll_id;
+        let currentOptions = req.poll_data.options || [];
+        optionsToRemove = optionsToRemove.split(",") || [];
+        req.responseJson = {};
+        _.forEach(optionsToRemove, function (option) {
+            option = option.trim();
+            if (currentOptions[option]) {
+                delete currentOptions[option];
+                if (pollTools.pollMap[poll_id]) {
+                    delete pollTools.pollMap[poll_id];
+                }
+            }
+        });
+        let updateOptions = {
+            tableName : 'polls', whereClause : {id : Number(poll_id)}, updateJson: {options : currentOptions}
+        };
+        lowDBTools.updateBulk(updateOptions, {}, function () {
+            if (updateOptions.error) {
+                util.log("Error in updating add new options :: ", updateOptions.error);
+                req.responseJson.message = 'Some error has occured. Try again in a few moments.';
+                return next();
+            }
+            req.responseJson.message = 'Options has been modified.';
             req.responseJson.success = true;
             return next();
         });
