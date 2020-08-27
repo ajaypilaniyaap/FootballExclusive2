@@ -1,3 +1,4 @@
+var util = require('util');
 var constants = {
     SITE_NAME : 'FootballExclusive',
     SITE_NAME_FIRST : 'Football',
@@ -27,7 +28,11 @@ var constants = {
         POLLS : 10
     },
     HASH : 'apsdsdefxdvdffxsdd',
-    SMMRY_API_KEY : '8DFB9082C1'
+    SMMRY_API_KEY : ['8DFB9082C1'],
+    SMMRY_API_URL : function (url, API_KEY) {
+        return util.format('https://api.smmry.com/?SM_API_KEY=%s&SM_URL=%s', API_KEY, url);
+    },
+    POLL_VOTE_COOKIE_TIMEOUT : 60 * 60 * 1000
 };
 
 constants.HTML_DATA ={

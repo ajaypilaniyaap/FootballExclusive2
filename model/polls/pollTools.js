@@ -17,8 +17,15 @@ var pollTools = {
     saveAnswerToPollMap : function (req, res, next) {
         let poll_id = req.poll_id;
         let answer = req.body.answer;
+        let voteCount = Number(req.body.voteCount || 1);
         let ip = req.user_ip;
 
+        if (req.alreadyVoted) {
+            _.set(req, 'data.message', 'We have already received a vote from your sytem for this poll! You can vote again after 1 hour.');
+            return next();
+        }
+
+        /*
         if (ip) {
             util.log("Ip :: ",ip);
             if (!pollTools.whiteListIPs[ip] && _.get(pollTools, ['pollMap', poll_id, 'IP_LIST', ip])) {
@@ -27,15 +34,18 @@ var pollTools = {
             }
             _.set(pollTools, ['pollMap', poll_id, 'IP_LIST', ip], true);
         }
-
+        */
         if (pollTools.pollMap[poll_id] && pollTools.pollMap[poll_id].offline) {
             _.set(req, 'data.message', 'Voting for this poll has been closed.');
             return next();
         }
-
+        if (voteCount > 1 && pollTools.pollMap[poll_id].poll_options.indexOf(String(answer)) == -1) {
+            _.set(req, 'data.message', 'Invalid option provided!');
+            return next();
+        }
         util.log("Casting vote, poll id : %s, answer : %s", poll_id, answer);
         _.set(req, 'data.message', 'Your vote has been recorded!');
-        _.set(pollTools, ['pollMap', poll_id, 'answersData', answer], _.get(pollTools, ['pollMap', poll_id, 'answersData', String(answer)], 0) + 1);
+        _.set(pollTools, ['pollMap', poll_id, 'answersData', answer], _.get(pollTools, ['pollMap', poll_id, 'answersData', String(answer)], 0) + voteCount);
 
         return next();
     },
@@ -158,6 +168,29 @@ var pollTools = {
             }
             req.poll_options = _.keys(_.get(req, ['poll_data', 'options']));
             return next();
+        });
+    },
+    replaceImageURL : function (req, res, next) {
+        req.responseJson = req.responseJson || {};
+        let poll_id = req.poll_id || req.body.poll_id || req.query.poll_id;
+        let image = req.body.imageUrl;
+        if (!Number(poll_id) || !image) {
+            return res.json({
+                message : 'Please provide a valid poll ID/Image URL.'
+            })
+        }
+        let updateOptions = {
+            tableName : 'polls', whereClause : {id : Number(poll_id)}, updateJson : {image : image}
+        }
+        lowDBTools.updateBulk(updateOptions, {}, function () {
+            if (updateOptions.error) {
+                return res.json({
+                    message : updateOptions.error
+                })
+            }
+            return res.json({
+                message : 'Image updated successfully!'
+            })
         });
     },
     preProcessing : function (req, res, next) {
@@ -462,6 +495,14 @@ var pollTools = {
             req.responseJson.success = true;
             return next();
         });
+    },
+    removeFromPollMap : function (req, res, next) {
+        let poll_id = req.poll_id || req.body.poll_id || req.query.poll_id;
+
+        if (pollTools.pollMap[poll_id]) {
+            delete pollTools.pollMap[poll_id];
+        }
+        return next();
     },
     removeOptions : function (req, res, next) {
         let optionsToRemove = req.body.optionsToRemove || '';

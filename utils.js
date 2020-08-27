@@ -23,6 +23,37 @@ var utils = {
         req.user_ip = req.headers['x-real-ip'];
         return next();
     },
+    checkParams : function (req, res, next) {
+        let prettyKeyMap = {
+            'poll_id' : 'Poll ID', 'voteCount' : 'Vote Count', 'secret_key' : 'Secret Key', 'answer' : 'Answer'
+        }
+        switch (req.url.toLowerCase()) {
+            case '/submitvotecustom' :
+                ['poll_id', 'voteCount', 'secret_key', 'answer'].forEach(function (key) {
+                    let found = req.body[key] || req.query[key]
+                    if (!found) {
+                        return res.json({
+                            message : 'Please provide ' + (prettyKeyMap[key] || key)
+                        })
+                    }
+                });
+        }
+        return next();
+    },
+    saveAndGetPollCookie : function (req, res, next) {
+        let options = {
+            maxAge: constants.POLL_VOTE_COOKIE_TIMEOUT,
+            httpOnly: true, // The cookie only accessible by the web server
+        }
+        let poll_id = req.poll_id || req.body.poll_id || req.query.poll_id;
+        if (req.cookies && req.cookies[poll_id]) {
+            req.alreadyVoted = true;
+        }
+        else if (poll_id) {
+            res.cookie(poll_id, true, options)
+        }
+        return next();
+    },
     calculateBarChartData : function (req, res, next) {
         let barChartData = {
             chart: {
@@ -124,7 +155,7 @@ var utils = {
             catch (e) {
                 //in case unable to parse set empty ojj to be returned
                 obj = {};
-                debug('Failed to parse JSON obj %s with error %s', JSON.stringify(obj), e.message);
+                util.log('Failed to parse JSON obj %s with error %s', JSON.stringify(obj), e.message);
             }
         }
 

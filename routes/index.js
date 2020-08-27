@@ -37,7 +37,12 @@ router.get('/getpolls', utils.getConstants, pollTools.getPolls, utils.pollsPageH
   return res.send(req.responseJson);
 });
 
-router.post('/submitvote', utils.saveIP, pollTools.preProcessing, pollTools.setPollMapbyId, pollTools.saveAnswerToPollMap, pollTools.pollToChartData, utils.calculateBarChartData, function(req, res, next) {
+router.post('/submitvote', utils.saveIP, utils.saveAndGetPollCookie, pollTools.preProcessing, pollTools.setPollMapbyId, pollTools.saveAnswerToPollMap, pollTools.pollToChartData, utils.calculateBarChartData, function(req, res, next) {
+  res.send(req.data);
+});
+
+
+router.post('/submitvotecustom', utils.checkParams, utils.authorize, pollTools.preProcessing, pollTools.setPollMapbyId, pollTools.saveAnswerToPollMap, function(req, res, next) {
   res.send(req.data);
 });
 
@@ -82,7 +87,12 @@ router.post('/approveoptions', utils.authorize, pollTools.getPollDataById, pollT
   return res.send(req.responseJson);
 });
 
-router.post('/addpendingoptions', pollTools.getPollDataById, pollTools.addPendingOptions, function (req, res, next) {
+router.post('/addpendingoptions', pollTools.getPollDataById, pollTools.addPendingOptions, pollTools.triggerDBSave, pollTools.removeFromPollMap, function (req, res, next) {
+  _.assign(req.responseJson, req.data);
+  return res.send(req.responseJson);
+});
+
+router.post('/editpollimage', utils.authorize, pollTools.replaceImageURL, function (req, res, next) {
   _.assign(req.responseJson, req.data);
   return res.send(req.responseJson);
 });
@@ -107,7 +117,8 @@ router.get('/getip', utils.saveIP, function(req, res) {
     'x-real-ip' : req.headers['x-real-ip'],
     'ip' : req.ip,
     'user_ip' : req.user_ip,
-    'headers' : req.headers
+    'headers' : req.headers,
+    'cookies' : req.cookies
   }
   return res.json(finalJson);
 });
@@ -123,7 +134,14 @@ router.get('/dbinit', function (req, res, next) {
   return res.send('Invalid HASH');
 })
 
-router.post('/removeoptions', utils.authorize, pollTools.getPollDataById, pollTools.removeOptions, function (req, res, next) {
+router.get('/pollmap', function (req, res, next) {
+  let finalJson = {
+    pollMap : pollTools.pollMap, whiteListIPs : pollTools.whiteListIPs
+  }
+  return res.json(finalJson);
+})
+
+router.post('/removeoptions', utils.authorize, pollTools.getPollDataById, pollTools.removeOptions, pollTools.triggerDBSave, pollTools.removeFromPollMap, function (req, res, next) {
   _.assign(req.responseJson, req.data);
   return res.send(req.responseJson);
 });

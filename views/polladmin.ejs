@@ -84,6 +84,19 @@
             <img src="/images/loading.gif" id="loader_remove_options" style="display: none"><img>
             <div id="message_remove_options" style="margin-top: 10px;"></div>
             <hr/>
+            <hr/>
+            <input type="text" name="id_edit_image" placeholder="Enter poll ID for which you want to edit image">
+            <input type="text" name="url_edit_image" placeholder="Enter new image URL">
+            <input type="submit" id="submit_edit_image" value="UPDATE">
+            <img src="/images/loading.gif" id="loader_edit_image" style="display: none"><img>
+            <div id="message_edit_image" style="margin-top: 10px;"></div>
+            <hr/>
+            <input type="text" name="id_vote_count" placeholder="Enter poll ID for which you want to edit vote count">
+            <input type="text" name="vote_count" placeholder="Enter vote count">
+            <input type="text" name="vote_option" placeholder="Enter vote option">
+            <input type="submit" id="submit_vote_count" value="UPDATE">
+            <img src="/images/loading.gif" id="loader_vote_count" style="display: none"><img>
+            <div id="message_vote_count" style="margin-top: 10px;"></div>
             <%-html%>
         </div>
 
@@ -157,6 +170,40 @@
                 $('input[name=optionsToRemove]').val('');
                 $('#message_remove_options').show();
                 $('#loader_remove_options').hide();
+            });
+        });
+        $("#submit_edit_image").click(function (event) {
+            var formData = {
+                'secret_key' : $('input[name=secretkey]').val(),
+                'poll_id' : $('input[name=id_edit_image]').val(),
+                'imageUrl' : $('input[name=url_edit_image]').val()
+            }
+            $('#message_edit_image').hide();
+            $('#loader_edit_image').show();
+            $.post("/editpollimage", formData,  function(data) {
+                $('#message_edit_image').text(data.message || '');
+                //$('input[name=id_remove_options]').val();
+                //$('input[name=url_edit_image]').val('');
+                $('#message_edit_image').show();
+                $('#loader_edit_image').hide();
+            });
+        });
+
+        $("#submit_vote_count").click(function (event) {
+            var formData = {
+                'secret_key' : $('input[name=secretkey]').val(),
+                'poll_id' : $('input[name=id_vote_count]').val(),
+                'voteCount' : $('input[name=vote_count]').val(),
+                'answer' : $('input[name=vote_option]').val()
+            }
+            $('#message_vote_count').hide();
+            $('#loader_vote_count').show();
+            $.post("/submitvotecustom", formData,  function(data) {
+                $('#message_vote_count').text(data.message || '');
+                //$('input[name=id_remove_options]').val();
+                //$('input[name=url_edit_image]').val('');
+                $('#message_vote_count').show();
+                $('#loader_vote_count').hide();
             });
         });
         $("#ip_submit").click(function (event) {
