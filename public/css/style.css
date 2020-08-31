@@ -1079,6 +1079,28 @@ button.btn1:hover{
 .link-medium:hover {
     color: black;
 }
+#paragraph-standard {
+    font-size: 20px;
+    line-height: 1.25;
+    color: black;
+    font-family: "Px Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+    padding-left: 0px !important;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+#title-standard {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 36px;
+    font-weight: 700;
+    font-family: inherit;
+    padding-left: 0px !important;
+}
+#image-standard {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 0px !important;
+}
 /*-- //subscribe --*/
 
 

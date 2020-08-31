@@ -16,6 +16,10 @@ var constants = {
     },
     ...(process.env.NODE_ENV == 'staging' ? {DB_ROOT_FILE: '/home/ajaypilania/FootballExclusive/data/db.json'} : {DB_ROOT_FILE : __dirname + '/data/db.json'}),
     ...(process.env.NODE_ENV == 'staging' ? {DB_ROOT_DIRECTORY: '/home/ajaypilania/FootballExclusive/data/'} : {DB_ROOT_DIRECTORY : __dirname + '/data/'}),
+    ...(process.env.NODE_ENV == 'staging' ? {ARTICLES_DB_ROOT_FILE: '/home/ajaypilania/FootballExclusive/data/articles.db'} : {DB_ROOT_FILE : __dirname + '/data/articles.db'}),
+    ...(process.env.NODE_ENV == 'staging' ? {ARTICLES_TAG_ROOT_FILE: '/home/ajaypilania/FootballExclusive/data/tags.json'} : {DB_ROOT_FILE : __dirname + '/data/tags.json'}),
+    ...(process.env.NODE_ENV == 'staging' ? {TAG_POST_MAPPING_FILE: '/home/ajaypilania/FootballExclusive/data/tags_posts.json'} : {TAG_POST_MAPPING_FILE : __dirname + '/data/tags_posts.json'}),
+    LOG_FILE : __dirname + '/model/logs/logs.json',
     DB_ROOT_DIRECTORY : __dirname + '/data',
     ERROR_404 : 'Page Not Found : 404',
     DB_SAVE_INTERVAL_POLLS : 5 * 30 * 1000,
@@ -25,12 +29,13 @@ var constants = {
         ap : {}
     },
     ITEMS_PER_PAGE : {
-        POLLS : 10
+        POLLS : 10,
+        POSTS : 10
     },
     HASH : 'apsdsdefxdvdffxsdd',
-    SMMRY_API_KEY : ['8DFB9082C1'],
+    SMMRY_API_KEY : ['8DFB9082C1', '17E1EE8373', '5EEEC20947', '5115FEF9E5', 'FA6DDF6D34'],
     SMMRY_API_URL : function (url, API_KEY) {
-        return util.format('https://api.smmry.com/?SM_API_KEY=%s&SM_URL=%s', API_KEY, url);
+        return util.format('https://api.smmry.com/?SM_API_KEY=%s&SM_KEYWORD_COUNT=5&SM_URL=%s', API_KEY, url);
     },
     POLL_VOTE_COOKIE_TIMEOUT : 60 * 60 * 1000
 };
