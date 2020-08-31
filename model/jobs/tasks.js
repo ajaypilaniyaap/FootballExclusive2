@@ -3,7 +3,7 @@ var utils = require('../../utils');
 var constants = require("../../constants");
 var _ = require("lodash");
 var request = require("request");
-
+var fs = require("fs");
 var tasks = {
     savePollMap : function () {
         let options = {
@@ -21,6 +21,9 @@ var tasks = {
     },
     init : function () {
         setInterval(tasks.savePollMap, constants.DB_SAVE_INTERVAL_POLLS);
+    },
+    initFiles : function (cb) {
+        let files = []
     }
 };
 
