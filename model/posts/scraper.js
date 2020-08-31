@@ -78,7 +78,7 @@ var scraperConstants = {
             sourceName : 'MARCA',
             keysToHave: [],
             keysToIgnore: COMMON_KEYS_TO_IGNORE.concat(['s_kw']),
-            refreshInterval : 10 * 60 * 1000,
+            refreshInterval : 15 * 60 * 1000,
             minimumLength : 80,
             metaDataFunction : metadata.general,
             active : true
@@ -89,7 +89,7 @@ var scraperConstants = {
             sourceName : 'BBC',
             keysToHave: ['/sport/football'],
             keysToIgnore: COMMON_KEYS_TO_IGNORE.concat(['teams/']),
-            refreshInterval : 10 * 60 * 1000,
+            refreshInterval : 20 * 60 * 1000,
             minimumLength : 20,
             metaDataFunction : metadata.general,
             active : true,
@@ -318,7 +318,7 @@ var scraper = {
                         key : source.sourceName, message : messageJson
                     });
                 });
-            }, source.refreshInterval/10);
+            }, source.refreshInterval);
         });
     }
 };
