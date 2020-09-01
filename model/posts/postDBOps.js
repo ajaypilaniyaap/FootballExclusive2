@@ -144,6 +144,38 @@ var postsDBOps = {
                 return cb(err, finalResult);
             });
         });
+    },
+    runQueryMiddleware : function (req, res, next) {
+        let query = utils.getKey(req, 'query_db');
+        if (!query) {
+            return res.json({
+                message : 'No query specified!'
+            });
+        }
+        postsDBOps.initDB(function (err, db) {
+            if (err) {
+                return res.json({
+                    message : 'Error while DB Init :: ' + err
+                });
+            }
+            try {
+                db.run(query, function (err, response) {
+                    if (err) {
+                        return res.json({
+                            message : 'Error while DB Run :: ' + err
+                        });
+                    }
+                    return res.json({
+                        message : 'Res :: ' + response
+                    });
+                });
+            }
+            catch (e) {
+                return res.json({
+                    message : 'Exception :: ' + e
+                });
+            }
+        });
     }
 };
 

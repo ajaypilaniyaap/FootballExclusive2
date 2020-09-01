@@ -62,6 +62,23 @@ router.get('/tagadmin', utils.getConstants, tags.loadTagsFromFile, function (req
     });
 });
 
+router.post('/retag', utils.authorize, function (req, res, next) {
+    postDBOps.getPostsByID(req, function (err, results) {
+        let post = results.post;
+        if (typeof post != "object" || !post) {
+            return res.json({
+                message : 'Article not found!'
+            })
+        }
+        tags.tagsQueue.push(post);
+        return res.json({
+            message : 'Article sent for re-tagging!'
+        })
+        return next()
+    });
+
+});
+
 router.get('/tag/:tag', utils.getConstants, function (req, res, next) {
     postDBOps.getPostsByTag(req, function (err, results) {
         req.results = results;
@@ -92,6 +109,12 @@ router.get('/:post_id/:identifier', utils.getConstants, function (req, res, next
         req.data.post = post;
         res.render('articlesingle.ejs', req.data);
         return next()
+    });
+});
+
+router.post('/runquery', utils.authorize, postDBOps.runQueryMiddleware, function (req, res, next){
+    return res.json({
+        message : 'Operation performed!'
     });
 });
 

@@ -195,6 +195,9 @@ var utils = {
     getTimeDelim : function () {
         return moment(new Date()).format('DD-MM-YYYY_HH-mm-ss');
     },
+    getTimePretty : function () {
+        return moment(new Date()).format('DD MMM YYYY HH:mm:ss');
+    },
     getKey : function (options, key) {
         return (options[key]) || (options.body && options.body[key]) || (options.query && options.query[key]) || (options.params && options.params[key]);
     }

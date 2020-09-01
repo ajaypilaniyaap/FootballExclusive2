@@ -13,6 +13,10 @@ router.get('/', utils.getConstants, function(req, res, next) {
   res.render('index', req.data);
 });
 
+router.get('/test', utils.getConstants, function(req, res, next) {
+  res.render('test', req.data);
+});
+
 router.get('/addpoll', utils.getConstants, function(req, res, next) {
   res.render('addpoll', req.data);
 });

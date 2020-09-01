@@ -84,6 +84,16 @@
             <img src="/images/loading.gif" id="loader_add_remove_node" style="display: none"><img>
             <div id="message_add_remove_node" style="margin-top: 10px;"></div>
             <hr/>
+            <input type="text" name="post_id" placeholder="Article ID to re-tag">
+            <input type="submit" id="re-tag-submit" value="RE-TAG">
+            <img src="/images/loading.gif" id="loader_re_tag" style="display: none"><img>
+            <div id="message_re_tag" style="margin-top: 10px;"></div>
+            <hr/>
+            <input type="text" name="query_db" placeholder="Query">
+            <input type="submit" id="query-submit" value="RUN">
+            <img src="/images/loading.gif" id="loader_query" style="display: none"><img>
+            <div id="message_query" style="margin-top: 10px;"></div>
+            <hr/>
         </div>
 
         <div class="col-md-6 w3l-contact-form">
@@ -170,6 +180,34 @@
                 $('#message_add_remove_node').text(data.message || '');
                 $('#message_add_remove_node').show();
                 $('#loader_add_remove_node').hide();
+            });
+        });
+
+        $("#re-tag-submit").click(function (event) {
+            var formData = {
+                'post_id': $('input[name=post_id]').val(),
+                'secret_key' : $('input[name=secretkey]').val()
+            }
+            $('#message_re_tag').hide();
+            $('#loader_re_tag').show();
+            $.post("/articles/retag", formData,  function(data) {
+                $('#message_re_tag').text(data.message || '');
+                $('#message_re_tag').show();
+                $('#loader_re_tag').hide();
+            });
+        });
+
+        $("#query-submit").click(function (event) {
+            var formData = {
+                'query_db': $('input[name=query_db]').val(),
+                'secret_key' : $('input[name=secretkey]').val()
+            }
+            $('#message_query').hide();
+            $('#loader_query').show();
+            $.post("/articles/runquery", formData,  function(data) {
+                $('#message_query').text(data.message || '');
+                $('#message_query').show();
+                $('#loader_query').hide();
             });
         });
         $().UItoTop({ easingType: 'easeOutQuart' });

@@ -13,13 +13,13 @@ var moment = require("moment");
 var postDbOps = require("./postDBOps");
 
 var DB;
-var POSTS_FAILED_SMMRY_API = {};
+var POSTS_PROCESSED_SMMRY_API = {};
 
 function queueCb(cb, finalPost) {
     /**
-     * Process final post data here
+     * Process final post data here [TO TEST PROCESS ALWAYS]
      */
-    if (finalPost.title && finalPost.content && finalPost.external_url && DB) {
+    if ((finalPost.title && finalPost.content && finalPost.external_url && DB)) {
         DB.run('INSERT INTO articles (title, content, external_url, meta, created_at) VALUES(?, ?, ?, ?, ?)', finalPost.title, finalPost.content, finalPost.external_url, JSON.stringify(finalPost.metaInfo), new Date(), function (err) {
             if (err) {
                 logger.queue.push({
@@ -111,15 +111,18 @@ var scraperConstants = {
 
 var summaryQueue = new Queue(function (input, cb) {
     let url = input.url;
-    logger.queue.push({
-        key : url, message : {
-            'INIT_PROCESS' : true
-        }
-    });
     if (!url || !utils.isValidHttpUrl(url)) {
         logger.queue.push({
             key : url, message : {
                 'INIT_PROCESS_SKIP' : 'Invalid URL'
+            }
+        });
+        return cb();
+    }
+    if (POSTS_PROCESSED_SMMRY_API[url]) {
+        logger.queue.push({
+            key : url, message : {
+                'SMMRY_API_SKIP' : 'IN MEMORY FLAG SKIP'
             }
         });
         return cb();
@@ -129,7 +132,6 @@ var summaryQueue = new Queue(function (input, cb) {
         method: 'GET',
         timeout : 30 * 1000
     };
-    API_KEY_COUNT = (API_KEY_COUNT + 1) % constants.SMMRY_API_KEY.length;
     //API_KEY_COUNT +=10;
     postDbOps.checkIfExistsFromURL(DB, url, function (err, res) {
         if (err) {
@@ -148,8 +150,22 @@ var summaryQueue = new Queue(function (input, cb) {
             });
             return cb();
         }
+        else if (POSTS_PROCESSED_SMMRY_API[url]) {
+            logger.queue.push({
+                key : url, message : {
+                    'SMMRY_API' : 'Already processed once'
+                }
+            });
+            return cb();
+        }
         else {
             try {
+                logger.queue.push({
+                    key : url, message : {
+                        'SMMRY_API_KEY' : constants.SMMRY_API_KEY[API_KEY_COUNT]
+                    }
+                });
+                API_KEY_COUNT = (API_KEY_COUNT + 1) % constants.SMMRY_API_KEY.length;
                 request(summaryOptions, function (err, res, body) {
                     let response = res ? res.body : '';
                     response = utils.jsonParser(response);
@@ -168,9 +184,9 @@ var summaryQueue = new Queue(function (input, cb) {
                                 'SMMRY_API_KEY_COUNT' : API_KEY_COUNT-1
                             }
                         });
-                        POSTS_FAILED_SMMRY_API[url] = true;
                         //response.sm_api_content = 'test';
                     }
+                    POSTS_PROCESSED_SMMRY_API[url] = true;
                     let finalPost = {
                         external_url : url
                     };
@@ -287,7 +303,7 @@ var scraper = {
                     if (options.expressionMatch && !url.match(options.expressionMatch)) {
                         return;
                     }
-                    if (POSTS_FAILED_SMMRY_API[url]) {
+                    if (POSTS_PROCESSED_SMMRY_API[url]) {
                         return;
                     }
                     finalUrlList.push(url);
@@ -307,11 +323,14 @@ var scraper = {
             if (!source.active) {
                 return;
             }
+            if (process.env.NODE_ENV == 'staging') {
+                source.refreshInterval = 60 * 1000;
+            }
             util.log('[SCRAPER] Initiating source : ',source.sourceName);
             setInterval(function () {
                 util.log('[SCRAPER] Fetching source : ',source.sourceName);
                 scraper.getURLsFromSource(source, function () {
-                    let key = 'URLS_FETCHED_'+utils.getTime();
+                    let key = 'URLS_FETCHED';
                     let messageJson = {};
                     messageJson[key] = _.size(source.finalUrlList);
                     logger.queue.push({

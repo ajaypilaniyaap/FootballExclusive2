@@ -10,14 +10,15 @@ var postHTML = {
         _.forEach(posts, function (post, index) {
             let image = (post.meta && utils.jsonParser(post.meta).image) || "/images/logofull.png"
 
-            html += util.format('<div class="col-md-6 agileits_welcome_grid_left">\n' +
-                '            <div class="link-medium">\n' +
-                '                <a class =\'link-medium\' href="%s"> %s </a>\n' +
+            html += util.format('<div class="article_row_container">' +
+                '<div class="col-md-6 agileits_welcome_grid_left">\n' +
+                '            <div class="link-medium" style="margin-bottom: 0px !important;">\n' +
+                '                <a class =\'link-medium\' style="margin-bottom: 0px !important;" href="%s"> %s </a>\n' +
                 '            </div>\n' +
                 '            </div>\n' +
                 '        <div class="col-md-6 agileits_welcome_grid_right"> <img src="%s" alt=" " style="margin-bottom: 10px" class="img-responsive" />\n' +
                 '            \n' +
-                '        </div>', utils.getPostURL(post), post.title, image);
+                '        </div> </div>', utils.getPostURL(post), post.title, image);
         });
         req.responseJson.postsFound = posts.length;
         req.responseJson.postsHTML = html;
