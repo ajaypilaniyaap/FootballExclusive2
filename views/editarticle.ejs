@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><%= constants.SITE_NAME %> Edit Article</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content=<%= constants.KEYWORDS %> />
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!-- bootstrap-css -->
+    <link href="/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+    <!--// bootstrap-css -->
+    <!-- css -->
+    <link rel="stylesheet" href="/css/style.css" type="text/css" media="all" />
+    <!--// css -->
+    <!-- font-awesome icons -->
+    <link href="/css/font-awesome.css" rel="stylesheet">
+    <!-- //font-awesome icons -->
+    <!-- font -->
+    <link href="//fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <link href='//fonts.googleapis.com/css?family=Roboto+Condensed:400,700italic,700,400italic,300italic,300' rel='stylesheet' type='text/css'>
+    <!-- //font -->
+    <script src="/js/jquery-1.11.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <!-- light-box -->
+    <link rel="stylesheet" href="/css/lightbox.css">
+    <!-- //light-box -->
+    <!-- <script src="js/SmoothScroll.min.js"></script> -->
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $(".scroll").click(function(event){
+                event.preventDefault();
+                $('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+            });
+        });
+    </script>
+
+</head>
+<body>
+<!-- banner -->
+<div class="banner">
+    <div class="banner-dot">
+        <!-- header-top -->
+        <%-constants.HTML_DATA.header_top%>
+        <!-- //header-top -->
+        <!--header-->
+        <%- constants.HTML_DATA.header%>
+        <!--//header-->
+        <!-- banner-info -->
+        <div class="banner-info" style="display: contents">
+            <div class="container">
+                <div class="w3layouts-text">
+                    <label></label>
+                    <h2>EDIT ARTICLE</h2>
+                </div>
+            </div>
+        </div>
+        <!-- //banner-info -->
+    </div>
+</div>
+<!-- //banner -->
+<!-- welcome -->
+<div class="welcome" id="about">
+    <div class="container">
+        <div class="col-md-6 w3l-contact-form">
+            <input type="text" name = "title" placeholder="Title", required="required">
+            <input type="text" name = "content" placeholder="Content", required="required">
+            <input type="text" name = "meta" placeholder="Meta Information">
+            <input type="text" name = "tags" placeholder="Tags">
+            <input type="text" name = "external_url" placeholder="External URL">
+            <input type="text" name = "user" placeholder="Enter Your User Key/Secret Key", required="required">
+            <input type="submit" id="submit-article" value="UPDATE">
+            <input type="submit" id="remove-article" value="REMOVE">
+            <img src="/images/loading.gif" id="loader" style="display: none"><img>
+            <div id="message" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="col-md-6 agileits_welcome_grid_right">
+            <figure class="highcharts-figure">
+                <div id="container"></div>
+            </figure>
+        </div>
+        <div class="clearfix"> </div>
+    </div>
+</div>
+<!-- //welcome -->
+<!-- footer -->
+<%-constants.HTML_DATA.footer%>
+<!-- //footer -->
+<script src="/js/jarallax.js"></script>
+<script type="text/javascript">
+    /* init Jarallax */
+    $('.jarallax').jarallax({
+        speed: 0.5,
+        imgWidth: 1366,
+        imgHeight: 768
+    })
+</script>
+<script src="/js/responsiveslides.min.js"></script>
+<script type="text/javascript" src="/js/move-top.js"></script>
+<script type="text/javascript" src="/js/easing.js"></script>
+<!-- here stars scrolling icon -->
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('input[name=title]').val('<%-post.title%>');
+        $('input[name=external_url]').val('<%=post.external_url%>');
+        $('input[name=content]').val('<%=post.content%>');
+        $('input[name=meta]').val('<%=post.metaString%>');
+        $('input[name=tags]').val('<%=post.tags%>');
+        $('#submit-article').click(function (event) {
+            $('#message').hide();
+            $('#loader').show();
+            var formData = {
+                'title': $('input[name=title]').val(),
+                'external_url': $('input[name=external_url]').val(),
+                'content': $('input[name=content]').val(),
+                'meta': $('input[name=meta]').val(),
+                'tags': $('input[name=tags]').val(),
+                'secret_key': $('input[name=user]').val(),
+                'post_id' : <%=post.id%>
+            }
+            $.post("/articles/updatearticle", formData,  function(data) {
+                $('#message').text(data.message || '');
+                $('#message').show();
+                $('#loader').hide();
+            });
+        });
+
+
+        $('#remove-article').click(function (event) {
+            $('#message').hide();
+            $('#loader').show();
+            var formData = {
+                'title': $('input[name=title]').val(),
+                'external_url': $('input[name=external_url]').val(),
+                'content': $('input[name=content]').val(),
+                'meta': $('input[name=meta]').val(),
+                'tags': $('input[name=tags]').val(),
+                'secret_key': $('input[name=user]').val(),
+                'post_id' : <%=post.id%>
+            }
+            $.post("/articles/deletearticle", formData,  function(data) {
+                $('#message').text(data.message || '');
+                $('#message').show();
+                $('#loader').hide();
+            });
+        });
+        $().UItoTop({ easingType: 'easeOutQuart' });
+    });
+
+
+</script>
+<!-- //here ends scrolling icon -->
+</body>
+
+</html>
