@@ -55,13 +55,19 @@
 <!-- welcome -->
 <div class="welcome" id="about">
     <div class="container">
+
         <div class="col-md-12" id="title-standard"><%=post.title%></div>
+        <button class="btn1" style="font-size: .7em;background:black;margin-right: 5px;"><%=post.created_at%></button>
+        <hr style="border-top: 3px solid #040404;">
         <img class="col-md-12"><img id="image-standard" src="<%=post.meta.image%>"></img>
+        <hr style="border-top: 3px solid #040404;">
         <div class="col-md-12" id="paragraph-standard">
             <%=post.content%>
-            <img src="/images/loading.gif" id="loader" style="display: none"><img>
-            <div id="message" style="margin-top: 10px;"></div>
-            <hr>
+            <hr style="border-top: 3px solid #040404;">
+            <div class="tags">
+
+            </div>
+            <hr style="border-top: 3px solid #040404;">
         </div>
 
         <div class="col-md-6 agileits_welcome_grid_right">
@@ -92,6 +98,12 @@
 <script type="text/javascript">
 
     $(document).ready(function() {
+        let tags = <%-JSON.stringify(post.tags)%> || '';
+        tags.forEach(function (tag) {
+            $('.tags').append('' +
+                '<a href="/articles/tag/'+tag.replace(" ","%20")+ '"><button class="btn1" style="font-size: .7em;background:black;border-radius: 15px;margin-right: 5px;margin-top: 10px;">'+tag+'</button></a>'
+            )
+        });
         $().UItoTop({ easingType: 'easeOutQuart' });
         let post_image = '<%=post.image%>';
         if (post_image) {

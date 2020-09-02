@@ -14,6 +14,7 @@ var postDbOps = require("./postDBOps");
 
 var DB;
 var POSTS_PROCESSED_SMMRY_API = {};
+var POSTS_META_DATA_NOT_FOUND = {};
 
 function queueCb(cb, finalPost) {
     /**
@@ -48,7 +49,7 @@ function queueCb(cb, finalPost) {
     }, 10 * 1000)
 }
 var API_KEY_COUNT = 0;
-var COMMON_KEYS_TO_IGNORE = ['videos', 'video', 'ads', 'googleads', 'adsense', 'terms-conditions', 'contact-us', '/live/', 'galleries', 'india', '-isl-', 'affiliate', 'doubleclick', '-promo', '/promo', 'instagram', 'facebook', 'twitter', 'lifestyle', 'album'];
+var COMMON_KEYS_TO_IGNORE = ['fantasy', 'videos', 'video', 'ads', 'googleads', 'adsense', 'terms-conditions', 'contact-us', '/live/', 'galleries', 'india', '-isl-', 'affiliate', 'doubleclick', '-promo', '/promo', 'instagram', 'facebook', 'twitter', 'lifestyle', 'album'];
 var scraperConstants = {
     SOURCES : [
         {
@@ -62,8 +63,8 @@ var scraperConstants = {
             active : false
         },
         {
-            url : 'https://global.espn.com/football/',
-            domain : 'https://www.espn.com',
+            url : 'https://www.espn.in/football/',
+            domain : 'https://www.espn.in',
             sourceName : 'ESPN',
             keysToHave: ['football'],
             keysToIgnore: COMMON_KEYS_TO_IGNORE.concat(['disney', 'blog']),
@@ -105,12 +106,35 @@ var scraperConstants = {
             minimumLength : 100,
             metaDataFunction : metadata.general,
             active : false
+        },
+        {
+            url : 'https://www.bundesliga.com/en/bundesliga',
+            domain : 'https://www.bundesliga.com',
+            sourceName : 'Bundesliga',
+            keysToHave: ['bundesliga', 'news'],
+            keysToIgnore: COMMON_KEYS_TO_IGNORE.concat(['/audio/', 'ng-interactive']),
+            refreshInterval : 30 * 60 * 1000,
+            minimumLength : 70,
+            metaDataFunction : metadata.general,
+            active : true
+        },
+        {
+            url : 'https://metro.co.uk/sport/football/',
+            domain : 'https://metro.co.uk',
+            sourceName : 'Metro Sport',
+            keysToHave: [],
+            keysToIgnore: COMMON_KEYS_TO_IGNORE.concat(['/audio/', 'ng-interactive']),
+            refreshInterval : 20 * 60 * 1000,
+            minimumLength : 80,
+            metaDataFunction : metadata.general,
+            active : false
         }
     ]
 };
 
 var summaryQueue = new Queue(function (input, cb) {
     let url = input.url;
+    let metaInfo = input.metaInfo || {};
     if (!url || !utils.isValidHttpUrl(url)) {
         logger.queue.push({
             key : url, message : {
@@ -193,28 +217,10 @@ var summaryQueue = new Queue(function (input, cb) {
                     if (response.sm_api_content) {
                         //Store it
                         finalPost.content = response.sm_api_content;
-                        if (input.source && input.source.metaDataFunction) {
-                            input.source.metaDataFunction(url, function (err, metaInfo) {
-                                if (err) {
-                                    logger.queue.push({
-                                        key : url, message : {
-                                            'META_DATA_SCRAPER' : err
-                                        }
-                                    });
-                                }
-                                if (metaInfo.image) {
-                                    finalPost.image = metaInfo.image;
-                                }
-                                if (metaInfo.title) {
-                                    finalPost.title = metaInfo.title;
-                                }
-                                finalPost.metaInfo = _.pick(metaInfo, ['image']) || {};
-                                finalPost.metaInfo.tags = response.sm_api_keyword_array;
-                                queueCb(cb, finalPost);
-                            });
-                        } else {
-                            queueCb(cb, finalPost);
-                        }
+                        finalPost.title = metaInfo.title;
+                        finalPost.metaInfo = _.pick(metaInfo, ['image']) || {};
+                        finalPost.metaInfo.tags = response.sm_api_keyword_array;
+                        queueCb(cb, finalPost);
                     }
                     else {
                         queueCb(cb, finalPost);
@@ -232,6 +238,15 @@ var summaryQueue = new Queue(function (input, cb) {
         }
     });
 });
+
+setInterval(function () {
+    logger.queue.push({
+        key : 'SUMMARY_QUEUE', message : {
+            'DATA_IN_QUEUE' : summaryQueue.length
+        }
+    });
+}, 5 * 60 * 1000);
+
 
 var scraper = {
     initDB : function () {
@@ -285,6 +300,8 @@ var scraper = {
              */
             let keysToHave = options.keysToHave || [];
             let keysToIgnore = options.keysToIgnore || [];
+            let totalUrls = urlList.length;
+            let processedUrls = 0;
             _.forEach(urlList, function (url) {
                 url = url.toLowerCase();
                //console.log("Url :: ",url," Length :: ",url.length)
@@ -301,16 +318,61 @@ var scraper = {
                         url = options.domain + url;
                     }
                     if (options.expressionMatch && !url.match(options.expressionMatch)) {
+                        processedUrls++;
                         return;
                     }
-                    if (POSTS_PROCESSED_SMMRY_API[url]) {
+                    if (POSTS_PROCESSED_SMMRY_API[url] || POSTS_META_DATA_NOT_FOUND[url]) {
+                        processedUrls++;
                         return;
                     }
-                    finalUrlList.push(url);
-                    summaryQueue.push({
-                        url:url,
-                        source: options
-                    })
+                    let metaData = {};
+                    if (options.metaDataFunction && typeof options.metaDataFunction == "function") {
+                        options.metaDataFunction(url, function (err, metaInfo) {
+                            processedUrls++;
+                            if (err) {
+                                logger.queue.push({
+                                    key : url, message : {
+                                        'META_DATA_SCRAPER' : err
+                                    }
+                                });
+                            }
+                            if (metaInfo.image) {
+                                metaData.image = metaInfo.image;
+                            }
+                            if (metaInfo.title) {
+                                metaData.title = metaInfo.title;
+                            }
+                            if (metaInfo.image && metaInfo.title) {
+                                finalUrlList.push(url);
+                                summaryQueue.push({
+                                    url:url,
+                                    source: options,
+                                    metaInfo : metaData
+                                });
+                            } else {
+                                logger.queue.push({
+                                    key : url, message : {
+                                        'META_DATA_INFO_MISSING' : metaInfo
+                                    }
+                                });
+                                POSTS_META_DATA_NOT_FOUND[url] = true;
+                            }
+                        });
+                    }
+                    else {
+                        processedUrls++;
+                        logger.queue.push({
+                            key : url, message : {
+                                'META_DATA_FUNCTION_NOT_FOUND' : 'Pushing to queue without metainfo'
+                            }
+                        });
+                        finalUrlList.push(url);
+                        summaryQueue.push({
+                            url:url,
+                            source: options,
+                            metaInfo : metaData
+                        });
+                    }
                 }
             });
             options.finalUrlList = finalUrlList;
@@ -333,9 +395,9 @@ var scraper = {
                     let key = 'URLS_FETCHED';
                     let messageJson = {};
                     messageJson[key] = _.size(source.finalUrlList);
-                    logger.queue.push({
-                        key : source.sourceName, message : messageJson
-                    });
+                    // logger.queue.push({
+                    //     key : source.sourceName, message : messageJson
+                    // });
                 });
             }, source.refreshInterval);
         });
@@ -351,6 +413,6 @@ module.exports = scraper;
             keysToHave : ['goal.com'],
             keysToIgnore : ['/team/']
         }
-        scraper.getURLsFromSource(scraperConstants.SOURCES[1], ()=>{});
+        scraper.getURLsFromSource(scraperConstants.SOURCES[6], ()=>{});
     }
 }())

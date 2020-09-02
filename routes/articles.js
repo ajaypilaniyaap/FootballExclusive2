@@ -96,6 +96,7 @@ router.get('/gettagarticles', utils.getConstants, function (req, res, next) {
     });
 }, postHTML.tagPageHTML, function (req, res, next) {
     _.assign(req.responseJson , req.data);
+    _.assign(req.responseJson , req.results);
     return res.json(req.responseJson);
 });
 
@@ -112,7 +113,32 @@ router.get('/:post_id/:identifier', utils.getConstants, function (req, res, next
     });
 });
 
+router.get('/:post_id/:identifier/edit', utils.getConstants, function (req, res, next) {
+    postDBOps.getPostsByID(req, function (err, results) {
+        let post = results.post;
+        if (typeof post != "object" || !post) {
+            req.data.message = 'Requested article not found : 404'
+            res.render('404.ejs', req.data);
+        }
+        post.metaString = JSON.stringify(post.meta);
+        req.data.post = post;
+        res.render('editarticle.ejs', req.data);
+        return next()
+    });
+});
+
 router.post('/runquery', utils.authorize, postDBOps.runQueryMiddleware, function (req, res, next){
+    return res.json({
+        message : 'Operation performed!'
+    });
+});
+
+router.post('/updatearticle', utils.authorize, postDBOps.updateArticle, function (req, res, next){
+    return res.json({
+        message : 'Operation performed!'
+    });
+});
+router.post('/deletearticle', utils.authorize, postDBOps.deleteArticle, function (req, res, next){
     return res.json({
         message : 'Operation performed!'
     });

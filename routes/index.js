@@ -17,6 +17,10 @@ router.get('/test', utils.getConstants, function(req, res, next) {
   res.render('test', req.data);
 });
 
+router.get('/livescores', utils.getConstants, function(req, res, next) {
+  res.render('livescores.ejs', req.data);
+});
+
 router.get('/addpoll', utils.getConstants, function(req, res, next) {
   res.render('addpoll', req.data);
 });
@@ -118,6 +122,13 @@ router.get('/downloaddata', function(req, res){
 
   console.log("Path to download :: ",file);
   res.download(file);
+});
+
+router.get('/resetlogs', function (req, res, next) {
+  fs.writeFileSync(constants.LOG_FILE, JSON.stringify({}));
+  return res.json({
+    message : 'DONE'
+  });
 });
 
 router.post('/changeipstatus', utils.authorize, utils.saveIP, function(req, res) {

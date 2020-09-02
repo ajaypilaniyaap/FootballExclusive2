@@ -4,6 +4,7 @@ const utils = require("../../utils");
 const constants = require("../../constants");
 var sqlLiteTools = require("../db/sqlLiteTools");
 var cache = require('memory-cache');
+var moment = require('moment');
 
 var postsDBOps = {
     initDB : function (cb) {
@@ -105,13 +106,29 @@ var postsDBOps = {
                 if (row) {
                     posts = row;
                 }
-                _.forEach(posts, function (post) {
+                let postsToRemove = [];
+                _.forEach(posts, function (post, index) {
                     try {
                         post.tags = post.tags.split(",");
                     } catch (e) {
                         post.tags = [];
                     }
+                    try {
+                        post.meta = utils.jsonParser(post.meta, {});
+                    } catch (e) {
+                        post.meta = {};
+                    }
+                    if (!post.meta.image) {
+                        post.meta.image = '/images/logofull.png'
+                    }
+                    post.created_at = moment(post.created_at).format('DD MMM YYYY HH:MM');
+                    if (!post.title || !post.content) {
+                        postsToRemove.push(index);
+                    }
                 });
+                _.forEach(postsToRemove, function (i) {
+                    delete posts[i];
+                })
                 finalResult.posts = posts;
                 cache.put(cacheKey, JSON.stringify(finalResult), 5 * 60 * 1000);
                 return cb(err, finalResult);
@@ -139,7 +156,18 @@ var postsDBOps = {
                 } catch (e) {
                     post.tags = [];
                 }
-                post.meta = utils.jsonParser(post.meta);
+                try {
+                    post.meta = utils.jsonParser(post.meta, {});
+                } catch (e) {
+                    post.meta = {};
+                }
+                if (!post.meta.image) {
+                    post.meta.image = '/images/logofull.png'
+                }
+                post.created_at = moment(post.created_at).format('DD MMM YYYY HH:MM');
+                if (!post.title || !post.content) {
+                    post = undefined;
+                }
                 finalResult.post = post;
                 return cb(err, finalResult);
             });
@@ -166,13 +194,88 @@ var postsDBOps = {
                         });
                     }
                     return res.json({
-                        message : 'Res :: ' + response
+                        message : 'Res :: ' + (response || 'Operation Performed!')
                     });
                 });
             }
             catch (e) {
                 return res.json({
                     message : 'Exception :: ' + e
+                });
+            }
+        });
+    },
+    updateArticle : function (req, res, next) {
+        let keys = ['title', 'content', 'external_url', 'meta', 'tags','post_id'];
+        let keyValueMap = {};
+        _.forEach(keys, function (key) {
+            let val = utils.getKey(req, key);
+            if (!val) {
+                return res.json({
+                    message : 'Please provide ' + key
+                });
+            }
+            keyValueMap[key] = val;
+        });
+        postsDBOps.initDB(function (err, db) {
+            if (err) {
+                return res.json({
+                    message : 'Error while DB Init :: ' + err
+                });
+            }
+            try {
+                db.run('UPDATE articles SET title=?,meta=?,tags=?,content=?,external_url=? where id=?', keyValueMap.title, keyValueMap.meta, keyValueMap.tags, keyValueMap.content, keyValueMap.external_url, keyValueMap.post_id, function (err, response) {
+                    if (err) {
+                        return res.json({
+                            message : 'Operation Failed :: ' + err
+                        });
+                    }
+                    return res.json({
+                        message : ' - ' + (response || 'Operation Performed!')
+                    });
+                });
+            }
+            catch (e) {
+                return res.json({
+                    message : 'Error occured :: ' + e
+                });
+            }
+        });
+    },
+
+    deleteArticle : function (req, res, next) {
+        let keys = ['post_id'];
+        let keyValueMap = {};
+        _.forEach(keys, function (key) {
+            let val = utils.getKey(req, key);
+            if (!val) {
+                return res.json({
+                    message : 'Please provide ' + key
+                });
+            }
+            keyValueMap[key] = val;
+        });
+        postsDBOps.initDB(function (err, db) {
+            if (err) {
+                return res.json({
+                    message : 'Error while DB Init :: ' + err
+                });
+            }
+            try {
+                db.run('DELETE from articles where id=?', keyValueMap.post_id, function (err, response) {
+                    if (err) {
+                        return res.json({
+                            message : 'Operation Failed :: ' + err
+                        });
+                    }
+                    return res.json({
+                        message : ' - ' + (response || 'Operation Performed!')
+                    });
+                });
+            }
+            catch (e) {
+                return res.json({
+                    message : 'Error occured :: ' + e
                 });
             }
         });

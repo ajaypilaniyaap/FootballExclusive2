@@ -33,7 +33,7 @@ var constants = {
         POSTS : 10
     },
     HASH : 'apsdsdefxdvdffxsdd',
-    SMMRY_API_KEY : ['8DFB9082C1', '17E1EE8373', '5EEEC20947', '5115FEF9E5', 'FA6DDF6D34'],
+    SMMRY_API_KEY : ['8DFB9082C1', '17E1EE8373', '5EEEC20947', '5115FEF9E5', 'FA6DDF6D34', 'F4AACE2BA2'],
     SMMRY_API_URL : function (url, API_KEY) {
         return util.format('https://api.smmry.com/?SM_API_KEY=%s&SM_KEYWORD_COUNT=5&SM_URL=%s', API_KEY, url);
     },

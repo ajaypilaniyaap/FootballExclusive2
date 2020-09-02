@@ -1064,8 +1064,9 @@ button.btn1 {
     -ms-transition: 0.5s all;
 }
 button.btn1:hover{
-	background:none;
+	background-color: black;
 	border: solid 2px #FFFFFF;
+    color: white;
 }
 
 .link-medium {
@@ -1080,26 +1081,30 @@ button.btn1:hover{
     color: black;
 }
 #paragraph-standard {
-    font-size: 20px;
-    line-height: 1.25;
-    color: black;
-    font-family: "Px Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing: subpixel-antialiased;
+    font-weight: 300;
+    letter-spacing: .025em;
+    line-height: 1.58;
+    padding: 0 0 1.5em;
     padding-left: 0px !important;
-    margin-top: 2%;
-    margin-bottom: 2%;
+    font-family: 'proxima-nova',sans-serif;
 }
 #title-standard {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 36px;
     font-weight: 700;
+    color: #503121;
     font-family: inherit;
     padding-left: 0px !important;
 }
 #image-standard {
-    margin-top: 0;
+    margin-top: 10px;
     margin-bottom: 10px;
     padding-left: 0px !important;
+}
+.tags {
+
 }
 /*-- //subscribe --*/
 
