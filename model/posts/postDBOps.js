@@ -279,6 +279,96 @@ var postsDBOps = {
                 });
             }
         });
+    },
+    getBy : function (req, res, next) {
+        let external_url = utils.getKey(req, 'external_url');
+        let title = utils.getKey(req, 'title');
+        let post_id = utils.getKey(req, 'id');
+        req.responseJson = req.responseJson || {};
+        if (external_url) {
+            postsDBOps.initDB(function (err, db) {
+                if (err) {
+                    return res.json({
+                        message : 'Error while DB Init :: ' + err
+                    });
+                }
+                try {
+                    db.all('SELECT * from articles where external_url=?', external_url, function (err, rows) {
+                        if (err) {
+                            return res.json({
+                                message : 'Operation Failed :: ' + err
+                            });
+                        }
+                        req.responseJson.posts = rows;
+                        return next();
+                    });
+                }
+                catch (e) {
+                    return res.json({
+                        message : 'Error occured :: ' + e
+                    });
+                    return next();
+                }
+            });
+        }
+
+        else if (title) {
+            postsDBOps.initDB(function (err, db) {
+                if (err) {
+                    return res.json({
+                        message : 'Error while DB Init :: ' + err
+                    });
+                }
+                try {
+                    db.all('SELECT * from articles where title=?', title, function (err, rows) {
+                        if (err) {
+                            return res.json({
+                                message : 'Operation Failed :: ' + err
+                            });
+                        }
+                        req.responseJson.posts = rows;
+                        return next();
+                    });
+                }
+                catch (e) {
+                    return res.json({
+                        message : 'Error occured :: ' + e
+                    });
+                    return next();
+                }
+            });
+        }
+
+        else if (post_id) {
+            postsDBOps.initDB(function (err, db) {
+                if (err) {
+                    return res.json({
+                        message : 'Error while DB Init :: ' + err
+                    });
+                }
+                try {
+                    db.all('SELECT * from articles where id=?', Number(post_id), function (err, rows) {
+                        if (err) {
+                            return res.json({
+                                message : 'Operation Failed :: ' + err
+                            });
+                        }
+                        req.responseJson.posts = rows;
+                        return next();
+                    });
+                }
+                catch (e) {
+                    return res.json({
+                        message : 'Error occured :: ' + e
+                    });
+                    return next();
+                }
+            });
+        } else {
+            return res.json({
+                message : 'Invalid params'
+            });
+        }
     }
 };
 

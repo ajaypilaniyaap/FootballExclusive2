@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script data-ad-client="ca-pub-9659614920434986" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <%-constants.HTML_DATA.HEAD_ELEMENTS%>
     <title><%= constants.SITE_NAME %> : <%=tag%> Articles</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -53,7 +53,7 @@
             <div class="container">
                 <div class="w3layouts-text">
                     <label></label>
-                    <h2> Summarized Articles </h2>
+                    <h2> <%=tag%> - Summarized Articles </h2>
                 </div>
             </div>
         </div>
@@ -96,10 +96,11 @@
     $(document).ready(function() {
         $().UItoTop({ easingType: 'easeOutQuart' });
         let page = <%=page%>;
+        let tag = '<%=tag%>';
         $('.load-more').click(function (event) {
             $('#message').hide();
             $('#loader').show();
-            $.get("/articles/gettagarticles", { page : page + 1},  function(data) {
+            $.get("/articles/gettagarticles", { page : page + 1, tag : tag},  function(data) {
                 if (data.postsFound > 0) {
                     $('.articles_container').append(data.postsHTML);
                 } else {

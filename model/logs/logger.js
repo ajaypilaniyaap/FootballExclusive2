@@ -4,7 +4,7 @@ var constants = require("../../constants");
 var _ = require("lodash");
 var fs = require("fs");
 
-var MIN_LENGTH_QUEUE = 2;
+var MIN_LENGTH_QUEUE = 10;
 var WRITE_INTERVAL = 30 * 1000;
 
 var logger = {
@@ -12,6 +12,14 @@ var logger = {
     queue : {
         push : function (input) {
             input.time_stamp = utils.getTime();
+            if (input.message) {
+                _.forEach(_.keys(input.message), function (key) {
+                    let value = input.message[key];
+                    delete input.message[key];
+                    key = key + '_' + utils.getTimePretty();
+                    input.message[key] = value;
+                });
+            }
             logger.final_queue.push(input);
         }
     },
@@ -21,15 +29,9 @@ var logger = {
             let logs = JSON.parse(fs.readFileSync(path));
             _.forEach(inputs, function (input) {
                 if (input.key && input.message && typeof input.message == "object") {
-                    _.forEach(_.keys(input.message), function (key) {
-                        let value = input.message[key];
-                        delete input.message[key];
-                        key = key + '_' + utils.getTimePretty();
-                        input.message[key] = value;
-                    });
                     logs[input.key] = logs[input.key] || {};
                     _.assign(logs[input.key], input.message);
-                    _.assign(logs[input.key], {time:input.time_stamp});
+                    //_.assign(logs[input.key], {time:input.time_stamp});
                 }
             });
             fs.writeFileSync(path, JSON.stringify(logs));

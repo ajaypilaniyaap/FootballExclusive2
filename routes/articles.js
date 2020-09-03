@@ -86,6 +86,9 @@ router.get('/tag/:tag', utils.getConstants, function (req, res, next) {
     });
 }, postHTML.tagPageHTML, function (req, res, next) {
     _.assign(req.responseJson , req.data);
+    _.assign(req.responseJson , req.results);
+    _.assign(req.responseJson , req.tag);
+    _.assign(req.responseJson , req.page);
     return res.render('tagpage.ejs', req.responseJson);
 });
 
@@ -97,6 +100,8 @@ router.get('/gettagarticles', utils.getConstants, function (req, res, next) {
 }, postHTML.tagPageHTML, function (req, res, next) {
     _.assign(req.responseJson , req.data);
     _.assign(req.responseJson , req.results);
+    _.assign(req.responseJson , req.tag);
+    _.assign(req.responseJson , req.page);
     return res.json(req.responseJson);
 });
 
@@ -142,6 +147,10 @@ router.post('/deletearticle', utils.authorize, postDBOps.deleteArticle, function
     return res.json({
         message : 'Operation performed!'
     });
+});
+
+router.get('/postby', postDBOps.getBy, function (req, res, next) {
+    return res.json(req.responseJson);
 });
 
 module.exports = router;

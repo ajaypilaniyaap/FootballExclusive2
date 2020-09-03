@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script data-ad-client="ca-pub-9659614920434986" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <%-constants.HTML_DATA.HEAD_ELEMENTS%>
     <title><%= constants.SITE_NAME %> : Live Scores</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -50,7 +50,7 @@
         <!-- banner-info -->
         <!-- //banner-info -->
 
-        <div style="align-content: center" ><script type="text/javascript" src="https://widget.enetscores.com/FW3FE5F04E90FC2EE5"></script></div>
+        <div class='score_container' style="align-content: center" ><script type="text/javascript" src="https://widget.enetscores.com/FW3FE5F04E90FC2EE5"></script></div>
     </div>
 </div>
 <!-- //banner -->
@@ -78,7 +78,12 @@
 <!-- here stars scrolling icon -->
 <script type="text/javascript">
 
-
+    $('.wff_bottom_banner_styles').hide();
+    $('.wff_floating_banner_styles').hide();
+    $('.wff_link_container').hide();
+    $('.wff_link_enetscores').hide();
+    $('.wff_link_enetpulse').hide();
+    $('.wff_floating_banner_text').hide();
     $(document).ready(function() {
         setInterval(function () {
             $('.wff_bottom_banner_styles').hide();
@@ -86,11 +91,20 @@
             $('.wff_link_container').hide();
             $('.wff_link_enetscores').hide();
             $('.wff_link_enetpulse').hide();
-        },1000)
+            $('.wff_floating_banner_text').hide();
+        },1 * 1000)
     });
 
 </script>
 <!-- //here ends scrolling icon -->
 </body>
-
+<style>
+    .score_container {
+        align-items: center;
+        align-content: center;
+        margin-left: 12%;
+        margin-top: 2%;
+        margin-bottom: 2%;
+    }
+</style>
 </html>

@@ -57,10 +57,37 @@ function calculateTags (finalPost, cb) {
             let content = finalPost.content || '';
             let finalTags = {};
             title = title.toUpperCase();
+            title = " " + title + " ";
             content = content.toUpperCase();
+            let modifiedNodes = {};
+            let suffixAllowed = ['?', '.', ':', ',' ,'\'', '"'];
+            try {
+                _.forEach(result.nodes || [], function (node, i) {
+                    modifiedNodes[node] = [];
+                    modifiedNodes[node].push(' '+node+' ');
+                    modifiedNodes[node].push(' '+node);
+                    modifiedNodes[node].push(node+' ');
+                    _.forEach(suffixAllowed, function (suffix) {
+                        modifiedNodes[node].push(node + suffix);
+                        modifiedNodes[node].push(node + ' ' + suffix);
+                    })
+                });
+            } catch (e) {
+                logger.queue.push({
+                    key : finalPost.external_url, message : {
+                        'TAGS_MODIF_EXECPTION' : e
+                    }
+                });
+            }
             let dfsCall = 0;
             _.forEach(result.nodes || [], function (tag) {
-                if (title.includes(tag) || content.includes(tag)) {
+                let itIncludes = false;
+                _.forEach(modifiedNodes[tag] || [], function (tagModified) {
+                    if (title.includes(tagModified)) {
+                        itIncludes = itIncludes || true;
+                    }
+                })
+                if (itIncludes) {
                     finalTags[tag] = true;
                     dfsCall++;
                     getDFSFromAPICall(tag, function (connectedTags) {
@@ -70,6 +97,11 @@ function calculateTags (finalPost, cb) {
                         });
                         let tagsToStore = _.keys(finalTags)
                         if (dfsCall == 0) {
+                            logger.queue.push({
+                                key : finalPost.external_url, message : {
+                                    'DB_TAGS_STORING' : tagsToStore
+                                }
+                            });
                             postDbOps.saveTagsByURL(finalPost.external_url, tagsToStore, function (err) {
                                 if (err) {
                                     logger.queue.push({

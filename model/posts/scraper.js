@@ -167,6 +167,7 @@ var summaryQueue = new Queue(function (input, cb) {
             return cb();
         }
         else if (res.count) {
+            POSTS_PROCESSED_SMMRY_API[url] = true;
             logger.queue.push({
                 key : url, message : {
                     'DB_CHECK_EXIST' : 'Already exists. Skipping.'

@@ -41,7 +41,9 @@ var constants = {
 };
 
 constants.HTML_DATA ={
-    footer : '\n' +
+    HEAD_ELEMENTS : '<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />\n' +
+        '<script data-ad-client="ca-pub-9659614920434986" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>',
+    footer : '\n ' +
         '<div class="agileits-w3layouts-footer">\n' +
         '    <div class="container">\n' +
         '        <div class="agile-copyright">\n' +
@@ -61,11 +63,19 @@ constants.HTML_DATA ={
         '                            <span class="icon-bar"></span>\n' +
         '                        </button>\n' +
         '                    </div>\n' +
-        '                    <!--navbar-header-->\n' +
+        '                    <!--navbar-header-->\n<hr>' +
         '                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">\n' +
         '                        <ul class="nav navbar-nav navbar-right">\n' +
         '                            <li><a href="/" >Home</a></li>\n' +
         '                            <li><a href="/polls">Polls</a></li>\n' +
+        '                            <li><a href="/livescores">Live Scores</a></li>\n' +
+        '                            <li><a href="/articles/tag/epl">Premier League</a></li>\n' +
+        '                            <li><a href="/articles/tag/la%20liga">La Liga</a></li>\n' +
+        '                            <li><a href="/articles/tag/serie%20a">Serie A</a></li>\n' +
+        '                            <li><a href="/articles/tag/ligue%201">Ligue 1</a></li>\n' +
+        '                            <li><a href="/articles/tag/bundesliga">Bundesliga</a></li>\n' +
+        '                            <li><a href="/articles/tag/uefa">UEFA</a></li>\n' +
+        '                            <li><a href="/articles/tag/international">International</a></li>\n' +
         '                        </ul>\n' +
         '                        <div class="clearfix"> </div>\n' +
         '                    </div>\n' +
