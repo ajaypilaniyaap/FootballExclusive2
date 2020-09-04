@@ -82,6 +82,9 @@ var postsDBOps = {
         if (tag == 'ALL') {
             tag = '';
         }
+        if (tag == 'NOTAG') {
+            tag = 'null';
+        }
         let page = Number(utils.getKey(options, 'page')) || 1;
         let offset = (page - 1) * constants.ITEMS_PER_PAGE.POSTS;
         let limit = offset + constants.ITEMS_PER_PAGE.POSTS;

@@ -32,6 +32,9 @@ var logger = {
                     logs[input.key] = logs[input.key] || {};
                     _.assign(logs[input.key], input.message);
                     //_.assign(logs[input.key], {time:input.time_stamp});
+                    if (utils.isValidHttpUrl(input.key)) {
+                        _.assign(logs[input.key], {POST_DATA:constants.SITE_HOST + '/articles/postby?external_url='+input.key});
+                    }
                 }
             });
             fs.writeFileSync(path, JSON.stringify(logs));
