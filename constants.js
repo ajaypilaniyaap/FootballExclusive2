@@ -16,6 +16,10 @@ var constants = {
     },
     ...(process.env.NODE_ENV == 'staging' ? {DB_ROOT_FILE: '/home/ajaypilania/FootballExclusive/data/db.json'} : {DB_ROOT_FILE : __dirname + '/data/db.json'}),
     ...(process.env.NODE_ENV == 'staging' ? {DB_ROOT_DIRECTORY: '/home/ajaypilania/FootballExclusive/data/'} : {DB_ROOT_DIRECTORY : __dirname + '/data/'}),
+    ...(process.env.NODE_ENV == 'staging' ? {ARTICLES_DB_ROOT_FILE: '/home/ajaypilania/FootballExclusive/data/articles.db'} : {ARTICLES_DB_ROOT_FILE : __dirname + '/data/articles.db'}),
+    ...(process.env.NODE_ENV == 'staging' ? {ARTICLES_TAG_ROOT_FILE: '/home/ajaypilania/FootballExclusive/data/tags.json'} : {ARTICLES_TAG_ROOT_FILE : __dirname + '/data/tags.json'}),
+    ...(process.env.NODE_ENV == 'staging' ? {TAG_POST_MAPPING_FILE: '/home/ajaypilania/FootballExclusive/data/tags_posts.json'} : {TAG_POST_MAPPING_FILE : __dirname + '/data/tags_posts.json'}),
+    LOG_FILE : __dirname + '/model/logs/logs.json',
     DB_ROOT_DIRECTORY : __dirname + '/data',
     ERROR_404 : 'Page Not Found : 404',
     DB_SAVE_INTERVAL_POLLS : 5 * 30 * 1000,
@@ -25,18 +29,21 @@ var constants = {
         ap : {}
     },
     ITEMS_PER_PAGE : {
-        POLLS : 10
+        POLLS : 10,
+        POSTS : 10
     },
     HASH : 'apsdsdefxdvdffxsdd',
-    SMMRY_API_KEY : ['8DFB9082C1'],
+    SMMRY_API_KEY : ['8DFB9082C1', '17E1EE8373', '5EEEC20947', '5115FEF9E5', 'FA6DDF6D34', 'F4AACE2BA2'],
     SMMRY_API_URL : function (url, API_KEY) {
-        return util.format('https://api.smmry.com/?SM_API_KEY=%s&SM_URL=%s', API_KEY, url);
+        return util.format('https://api.smmry.com/?SM_API_KEY=%s&SM_KEYWORD_COUNT=5&SM_URL=%s', API_KEY, url);
     },
     POLL_VOTE_COOKIE_TIMEOUT : 60 * 60 * 1000
 };
 
 constants.HTML_DATA ={
-    footer : '\n' +
+    HEAD_ELEMENTS : '<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />\n' +
+        '<script data-ad-client="ca-pub-9659614920434986" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>',
+    footer : '\n ' +
         '<div class="agileits-w3layouts-footer">\n' +
         '    <div class="container">\n' +
         '        <div class="agile-copyright">\n' +
@@ -56,11 +63,19 @@ constants.HTML_DATA ={
         '                            <span class="icon-bar"></span>\n' +
         '                        </button>\n' +
         '                    </div>\n' +
-        '                    <!--navbar-header-->\n' +
+        '                    <!--navbar-header-->\n<hr>' +
         '                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">\n' +
         '                        <ul class="nav navbar-nav navbar-right">\n' +
         '                            <li><a href="/" >Home</a></li>\n' +
         '                            <li><a href="/polls">Polls</a></li>\n' +
+        '                            <li><a href="/livescores">Live Scores</a></li>\n' +
+        '                            <li><a href="/articles/tag/epl">Premier League</a></li>\n' +
+        '                            <li><a href="/articles/tag/la%20liga">La Liga</a></li>\n' +
+        '                            <li><a href="/articles/tag/serie%20a">Serie A</a></li>\n' +
+        '                            <li><a href="/articles/tag/ligue%201">Ligue 1</a></li>\n' +
+        '                            <li><a href="/articles/tag/bundesliga">Bundesliga</a></li>\n' +
+        '                            <li><a href="/articles/tag/uefa">UEFA</a></li>\n' +
+        '                            <li><a href="/articles/tag/international">International</a></li>\n' +
         '                        </ul>\n' +
         '                        <div class="clearfix"> </div>\n' +
         '                    </div>\n' +

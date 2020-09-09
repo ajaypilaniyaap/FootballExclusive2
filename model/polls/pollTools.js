@@ -346,10 +346,11 @@ var pollTools = {
                 return next();
             }
             let pollsReceived = _.cloneDeep(queryOptions.results);
-            Array.prototype.push.apply(req.pollsArray, _.slice(pollsReceived, offset, limit));
+            Array.prototype.push.apply(req.pollsArray, pollsReceived);
             req.pollsArray.sort(function (a,b) {
                 return b.id-a.id;
             });
+            req.pollsArray = _.slice(req.pollsArray, offset, limit);
             /**
              * Get Chart Data
              */

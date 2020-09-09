@@ -6,11 +6,19 @@ var constants = require("../constants");
 var utils = require("../utils");
 var pollTools = require("../model/polls/pollTools");
 var lowDBTools = require("../model/db/lowDBTools");
-var upload = require("../model/files/upload").upload;
+var fs = require("fs");
 
 /* GET home page. */
 router.get('/', utils.getConstants, function(req, res, next) {
   res.render('index', req.data);
+});
+
+router.get('/test', utils.getConstants, function(req, res, next) {
+  res.render('test', req.data);
+});
+
+router.get('/livescores', utils.getConstants, function(req, res, next) {
+  res.render('livescores.ejs', req.data);
 });
 
 router.get('/addpoll', utils.getConstants, function(req, res, next) {
@@ -98,9 +106,29 @@ router.post('/editpollimage', utils.authorize, pollTools.replaceImageURL, functi
 });
 
 router.get('/downloaddata', function(req, res){
-  const file = constants.DB_ROOT_FILE;
+  var file;
+  file = constants.DB_ROOT_FILE;
+  switch (req.query.source) {
+    case 'db' :
+      file = constants.DB_ROOT_FILE;
+      break;
+    case 'tags' :
+      file = constants.ARTICLES_TAG_ROOT_FILE;
+      break;
+    case 'articles' :
+      file = constants.ARTICLES_DB_ROOT_FILE;
+      break;
+  }
+
   console.log("Path to download :: ",file);
   res.download(file);
+});
+
+router.get('/resetlogs', function (req, res, next) {
+  fs.writeFileSync(constants.LOG_FILE, JSON.stringify({}));
+  return res.json({
+    message : 'DONE'
+  });
 });
 
 router.post('/changeipstatus', utils.authorize, utils.saveIP, function(req, res) {
@@ -139,7 +167,14 @@ router.get('/pollmap', function (req, res, next) {
     pollMap : pollTools.pollMap, whiteListIPs : pollTools.whiteListIPs
   }
   return res.json(finalJson);
-})
+});
+
+
+router.get('/logs', function (req, res, next) {
+  let path = constants.LOG_FILE;
+  let logs = JSON.parse(fs.readFileSync(path));
+  return res.json(logs);
+});
 
 router.post('/removeoptions', utils.authorize, pollTools.getPollDataById, pollTools.removeOptions, pollTools.triggerDBSave, pollTools.removeFromPollMap, function (req, res, next) {
   _.assign(req.responseJson, req.data);

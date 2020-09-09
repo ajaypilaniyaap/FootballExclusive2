@@ -1,10 +1,12 @@
 var util = require("util");
 var _ = require("lodash");
 var constants = require("./constants");
+var moment = require("moment");
 
 var utils = {
     getConstants : function (req, res, next) {
-        _.set(req, ['data', 'constants'], _.omit(constants, ['SECRET', 'USERS']));
+        req.responseJson = req.responseJson || {};
+        _.set(req, ['data', 'constants'], _.omit(constants, ['SECRET', 'USERS', 'SMMRY_API_KEY', 'HASH', 'DB_ROOT_FILE', 'DB_ROOT_DIRECTORY', 'ARTICLES_DB_ROOT_FILE', 'ARTICLES_TAG_ROOT_FILE', 'TAG_POST_MAPPING_FILE', 'LOG_FILE']));
         return next();
     },
     checkMandatoryParams : function (options, mandatoryParams) {
@@ -117,6 +119,7 @@ var utils = {
     },
     authorize : function (req, res, next) {
         let user = req.body.user || req.body.secret_key;
+        req.responseJson = req.responseJson || {};
         util.log("[AUTHORIZE] Body :: ",req.body);
         if (!constants.USERS[user]) {
             return res.json({
@@ -148,6 +151,9 @@ var utils = {
     getPollURL : function (poll) {
         return constants.SITE_HOST + '/poll/' + poll.id + '/' + poll.string_id;
     },
+    getPostURL : function (post) {
+        return constants.SITE_HOST + '/articles/' + post.id + '/' + post.title.replace(/[\W_]+/g,"-");
+    },
     jsonParser: function(obj, defaultObj) {
 
         if (typeof obj === 'string') {
@@ -171,6 +177,29 @@ var utils = {
         });
         res.status(status);
         return res.render('404', req.data);
+    },
+    isValidHttpUrl : function (string) {
+        let url;
+
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    },
+    getTime : function () {
+        return moment(new Date()).format('DD-MM-YYYY HH:mm:ss');
+    },
+    getTimeDelim : function () {
+        return moment().utcOffset("+05:30").format('DD/MM/YYYY_HH-mm-ss');
+    },
+    getTimePretty : function () {
+        return moment().utcOffset("+05:30").format('DD MMM YYYY HH:mm:ss');
+    },
+    getKey : function (options, key) {
+        return (options[key]) || (options.body && options.body[key]) || (options.query && options.query[key]) || (options.params && options.params[key]);
     }
 };
 

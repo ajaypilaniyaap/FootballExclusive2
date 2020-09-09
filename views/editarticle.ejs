@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <%-constants.HTML_DATA.HEAD_ELEMENTS%>
-    <title><%= constants.SITE_NAME %> Polls</title>
+    <title><%= constants.SITE_NAME %> Edit Article</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="keywords" content=<%= constants.KEYWORDS %> />
@@ -24,7 +24,6 @@
     <!-- font -->
     <link href="//fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
     <link href='//fonts.googleapis.com/css?family=Roboto+Condensed:400,700italic,700,400italic,300italic,300' rel='stylesheet' type='text/css'>
-    <link href="https://fonts.googleapis.com/css2?family=Euphoria+Script&display=swap" rel="stylesheet">
     <!-- //font -->
     <script src="/js/jquery-1.11.1.min.js"></script>
     <script src="/js/bootstrap.js"></script>
@@ -57,7 +56,7 @@
             <div class="container">
                 <div class="w3layouts-text">
                     <label></label>
-                    <h2> P O L L S </h2>
+                    <h2>EDIT ARTICLE</h2>
                 </div>
             </div>
         </div>
@@ -65,18 +64,29 @@
     </div>
 </div>
 <!-- //banner -->
-
 <!-- welcome -->
 <div class="welcome" id="about">
     <div class="container">
-        <div class = "poll_container">
-        <%-pollListHTML%>
+        <div class="col-md-6 w3l-contact-form">
+            <input type="text" name = "title" placeholder="Title", required="required">
+            <input type="text" name = "content" placeholder="Content", required="required">
+            <input type="text" name = "meta" placeholder="Meta Information">
+            <input type="text" name = "tags" placeholder="Tags">
+            <input type="text" name = "external_url" placeholder="External URL">
+            <input type="text" name = "user" placeholder="Enter Your User Key/Secret Key", required="required">
+            <input type="submit" id="submit-article" value="UPDATE">
+            <input type="submit" id="remove-article" value="REMOVE">
+            <img src="/images/loading.gif" id="loader" style="display: none"><img>
+            <div id="message" style="margin-top: 10px;"></div>
         </div>
-        <div class="clearfix">
+
+        <div class="col-md-6 agileits_welcome_grid_right">
+            <figure class="highcharts-figure">
+                <div id="container"></div>
+            </figure>
+        </div>
+        <div class="clearfix"> </div>
     </div>
-        <input type="submit" class="load-more" value="LOAD MORE POLLS"> </div>
-    <img src="/images/loading.gif" id="loader" style="display: none; margin-left:auto;margin-right: auto"><img>
-    <div id="message" style="margin-top: 10px; font-size: 50px; display : table; margin-left:auto;margin-right: auto;font-family: 'Euphoria Script', cursive;"></div>
 </div>
 <!-- //welcome -->
 <!-- footer -->
@@ -98,90 +108,55 @@
 <script type="text/javascript">
 
     $(document).ready(function() {
-        $().UItoTop({ easingType: 'easeOutQuart' });
-        let polls = <%-JSON.stringify(polls)%>;
-        let page = <%=page%>;
-        let containers = <%-JSON.stringify(barContainerIDs)%>;
-        for (var index = 0; index < polls.length; index++) {
-            let poll = polls[index];
-            Highcharts.chart('container_'+poll.id, poll.barChartData);
-        }
-        $('.load-more').click(function (event) {
+        $('input[name=title]').val('<%-post.title%>');
+        $('input[name=external_url]').val('<%=post.external_url%>');
+        $('input[name=content]').val('<%=post.content%>');
+        $('input[name=meta]').val('<%=post.metaString%>');
+        $('input[name=tags]').val('<%=post.tags%>');
+        $('#submit-article').click(function (event) {
             $('#message').hide();
             $('#loader').show();
-            $.get("/getpolls", { page : page + 1},  function(data) {
-                if (data.polls.length > 0) {
-                    $('.poll_container').append(data.pollListHTML);
-                    let polls = data.polls;
-                    let containers = data.barContainerIDs;
-                    for (var index = 0; index < polls.length; index++) {
-                        let poll = polls[index];
-                        Highcharts.chart('container_'+poll.id, poll.barChartData);
-                    }
-                }
-                page = data.page;
-                $('#message').text(data.error || '');
+            var formData = {
+                'title': $('input[name=title]').val(),
+                'external_url': $('input[name=external_url]').val(),
+                'content': $('input[name=content]').val(),
+                'meta': $('input[name=meta]').val(),
+                'tags': $('input[name=tags]').val(),
+                'secret_key': $('input[name=user]').val(),
+                'post_id' : <%=post.id%>
+            }
+            $.post("/articles/updatearticle", formData,  function(data) {
+                $('#message').text(data.message || '');
                 $('#message').show();
                 $('#loader').hide();
             });
         });
+
+
+        $('#remove-article').click(function (event) {
+            $('#message').hide();
+            $('#loader').show();
+            var formData = {
+                'title': $('input[name=title]').val(),
+                'external_url': $('input[name=external_url]').val(),
+                'content': $('input[name=content]').val(),
+                'meta': $('input[name=meta]').val(),
+                'tags': $('input[name=tags]').val(),
+                'secret_key': $('input[name=user]').val(),
+                'post_id' : <%=post.id%>
+            }
+            $.post("/articles/deletearticle", formData,  function(data) {
+                $('#message').text(data.message || '');
+                $('#message').show();
+                $('#loader').hide();
+            });
+        });
+        $().UItoTop({ easingType: 'easeOutQuart' });
     });
+
 
 </script>
 <!-- //here ends scrolling icon -->
 </body>
 
-<style>
-    .poll-link {
-        font-family: inherit;
-        text-transform: uppercase;
-        font-size: 40px;
-        margin-top: 10%;
-        color: #ac2925;
-    }
-    .poll-link-container {
-        margin-top: 30%;
-    }
-    .poll-link:hover {
-        color: black;
-    }
-    .highcharts-figure, .highcharts-data-table table {
-        min-width: 320px;
-        max-width: 800px;
-        margin: 1em auto;
-    }
-
-    .highcharts-data-table table {
-        font-family: Verdana, sans-serif;
-        border-collapse: collapse;
-        border: 1px solid #EBEBEB;
-        margin: 10px auto;
-        text-align: center;
-        width: 100%;
-        max-width: 500px;
-    }
-    .highcharts-data-table caption {
-        padding: 1em 0;
-        font-size: 1.2em;
-        color: #555;
-    }
-    .highcharts-data-table th {
-        font-weight: 600;
-        padding: 0.5em;
-    }
-    .highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
-        padding: 0.5em;
-    }
-    .highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
-        background: #f8f8f8;
-    }
-    .highcharts-data-table tr:hover {
-        background: #f1f7ff;
-    }
-
-
-    input[type="number"] {
-        min-width: 50px;
-    }
-</style>
 </html>

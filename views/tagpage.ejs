@@ -3,14 +3,10 @@
 <html lang="en">
 <head>
     <%-constants.HTML_DATA.HEAD_ELEMENTS%>
-    <title><%= constants.SITE_NAME %> Polls</title>
+    <title><%= constants.SITE_NAME %> : <%=tag%> Articles</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="keywords" content=<%= constants.KEYWORDS %> />
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
     <!-- bootstrap-css -->
     <link href="/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
@@ -57,7 +53,7 @@
             <div class="container">
                 <div class="w3layouts-text">
                     <label></label>
-                    <h2> P O L L S </h2>
+                    <h2> <%=tag%> - Summarized Articles </h2>
                 </div>
             </div>
         </div>
@@ -69,12 +65,12 @@
 <!-- welcome -->
 <div class="welcome" id="about">
     <div class="container">
-        <div class = "poll_container">
-        <%-pollListHTML%>
+        <div class = "articles_container">
+            <%-postsHTML%>
         </div>
         <div class="clearfix">
-    </div>
-        <input type="submit" class="load-more" value="LOAD MORE POLLS"> </div>
+        </div>
+        <input type="submit" class="load-more" value="LOAD MORE ARTICLES"> </div>
     <img src="/images/loading.gif" id="loader" style="display: none; margin-left:auto;margin-right: auto"><img>
     <div id="message" style="margin-top: 10px; font-size: 50px; display : table; margin-left:auto;margin-right: auto;font-family: 'Euphoria Script', cursive;"></div>
 </div>
@@ -99,28 +95,19 @@
 
     $(document).ready(function() {
         $().UItoTop({ easingType: 'easeOutQuart' });
-        let polls = <%-JSON.stringify(polls)%>;
         let page = <%=page%>;
-        let containers = <%-JSON.stringify(barContainerIDs)%>;
-        for (var index = 0; index < polls.length; index++) {
-            let poll = polls[index];
-            Highcharts.chart('container_'+poll.id, poll.barChartData);
-        }
+        let tag = '<%=tag%>';
         $('.load-more').click(function (event) {
             $('#message').hide();
             $('#loader').show();
-            $.get("/getpolls", { page : page + 1},  function(data) {
-                if (data.polls.length > 0) {
-                    $('.poll_container').append(data.pollListHTML);
-                    let polls = data.polls;
-                    let containers = data.barContainerIDs;
-                    for (var index = 0; index < polls.length; index++) {
-                        let poll = polls[index];
-                        Highcharts.chart('container_'+poll.id, poll.barChartData);
-                    }
+            $.get("/articles/gettagarticles", { page : page + 1, tag : tag},  function(data) {
+                if (data.postsFound > 0) {
+                    $('.articles_container').append(data.postsHTML);
+                } else {
+                    data.message = 'You have seen it all. Come back later for more articles!';
                 }
                 page = data.page;
-                $('#message').text(data.error || '');
+                $('#message').text(data.message || '');
                 $('#message').show();
                 $('#loader').hide();
             });
