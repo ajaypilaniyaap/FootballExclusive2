@@ -40,10 +40,53 @@ var constants = {
     POLL_VOTE_COOKIE_TIMEOUT : 60 * 60 * 1000
 };
 
+constants.ADS = {
+    IN_ARTICLE : '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>\n' +
+        '<ins class="adsbygoogle"\n' +
+        '     style="display:block; text-align:center;"\n' +
+        '     data-ad-layout="in-article"\n' +
+        '     data-ad-format="fluid"\n' +
+        '     data-ad-client="ca-pub-9659614920434986"\n' +
+        '     data-ad-slot="3113583111"></ins>\n' +
+        '<script>\n' +
+        '     (adsbygoogle = window.adsbygoogle || []).push({});\n' +
+        '</script>',
+    IN_FEED_TAG : '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>\n' +
+        '<ins class="adsbygoogle"\n' +
+        '     style="display:block"\n' +
+        '     data-ad-format="fluid"\n' +
+        '     data-ad-layout-key="-fb+5w+4e-db+86"\n' +
+        '     data-ad-client="ca-pub-9659614920434986"\n' +
+        '     data-ad-slot="9088157030"></ins>\n' +
+        '<script>\n' +
+        '     (adsbygoogle = window.adsbygoogle || []).push({});\n' +
+        '</script>',
+    HORIZONTAL_ADS : '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>\n' +
+        '<!-- General Horizontal ads -->\n' +
+        '<ins class="adsbygoogle"\n' +
+        '     style="display:block"\n' +
+        '     data-ad-client="ca-pub-9659614920434986"\n' +
+        '     data-ad-slot="4574196952"\n' +
+        '     data-ad-format="auto"\n' +
+        '     data-full-width-responsive="true"></ins>\n' +
+        '<script>\n' +
+        '     (adsbygoogle = window.adsbygoogle || []).push({});\n' +
+        '</script>',
+    FIXED_HORIZONTAL_ADS : '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>\n' +
+        '<!-- Fixed horizontal ads -->\n' +
+        '<ins class="adsbygoogle"\n' +
+        '     style="display:inline-block;width:728px;height:90px"\n' +
+        '     data-ad-client="ca-pub-9659614920434986"\n' +
+        '     data-ad-slot="1513947019"></ins>\n' +
+        '<script>\n' +
+        '     (adsbygoogle = window.adsbygoogle || []).push({});\n' +
+        '</script>'
+}
+
 constants.HTML_DATA ={
     HEAD_ELEMENTS : '<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />\n' +
         '<script data-ad-client="ca-pub-9659614920434986" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>',
-    footer : '\n ' +
+    footer : '\n <div style="text-align: center"> ' + constants.ADS.HORIZONTAL_ADS + '</div>' +
         '<div class="agileits-w3layouts-footer">\n' +
         '    <div class="container">\n' +
         '        <div class="agile-copyright">\n' +
@@ -105,5 +148,6 @@ constants.HTML_DATA ={
         '            </div>\n' +
         '        </div>'
 };
+
 
 module.exports = constants;

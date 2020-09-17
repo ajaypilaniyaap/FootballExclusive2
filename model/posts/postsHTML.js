@@ -9,7 +9,9 @@ var postHTML = {
         let html = '';
         _.forEach(posts, function (post, index) {
             let image = (post.meta && utils.jsonParser(post.meta).image) || "/images/logofull.png"
-
+            if (index && index%3 == 0) {
+                html += util.format('<div class="article_row_container" style="text-align: center">%s</div>', constants.ADS.FIXED_HORIZONTAL_ADS);
+            }
             html += util.format('<div class="article_row_container">' +
                 '<div class="col-md-6 agileits_welcome_grid_left">\n' +
                 '            <div class="link-medium" style="margin-bottom: 0px !important;">\n' +
